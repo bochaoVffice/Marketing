@@ -1,0 +1,739 @@
+<title>Copilot Capability Modules</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&display=swap">
+<style>
+:root{
+  --bg:#F3F6F5; --surface:#FFFFFF; --surface-2:#E8EEEC; --ink:#15201E; --ink-2:#4B5B58; --ink-3:#768683;
+  --line:#D5DEDB; --accent:#0E6B64; --accent-soft:#DAEDEA; --star:#8F5C0B; --star-soft:#F5E8CF;
+  --ok:#2A7548; --ok-soft:#DCEFE2; --warn:#955B08; --warn-soft:#F6E6C8; --bad:#A33B33; --bad-soft:#F5DCD8;
+  --serif:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --sans:"IBM Plex Sans","Segoe UI",system-ui,-apple-system,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0E1413; --surface:#151D1C; --surface-2:#1C2625; --ink:#E2EAE8; --ink-2:#A6B4B1; --ink-3:#7E8D8A;
+    --line:#2A3634; --accent:#5BC1B6; --accent-soft:#15302D; --star:#E3AB4E; --star-soft:#32270F;
+    --ok:#72CA95; --ok-soft:#15301F; --warn:#E4AA50; --warn-soft:#33250F; --bad:#EF8C82; --bad-soft:#3A1C19;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0E1413; --surface:#151D1C; --surface-2:#1C2625; --ink:#E2EAE8; --ink-2:#A6B4B1; --ink-3:#7E8D8A;
+  --line:#2A3634; --accent:#5BC1B6; --accent-soft:#15302D; --star:#E3AB4E; --star-soft:#32270F;
+  --ok:#72CA95; --ok-soft:#15301F; --warn:#E4AA50; --warn-soft:#33250F; --bad:#EF8C82; --bad-soft:#3A1C19;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.65;padding-inline:20px;padding-block:0 64px}
+a{color:var(--accent)}
+a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+h1,h2,h3,h4{text-wrap:balance;margin:0}
+p{margin:0}
+.wrap{max-width:1160px;margin:0 auto}
+.mono{font-family:var(--mono);font-size:.92em}
+
+.top{padding-block:56px 36px;border-bottom:1px solid var(--line)}
+.eyebrow{font-size:12.5px;letter-spacing:.14em;color:var(--ink-3);text-transform:uppercase;font-weight:500}
+.top h1{font-family:var(--serif);font-size:clamp(34px,5vw,52px);line-height:1.1;margin-top:10px;letter-spacing:-.01em}
+.lede{max-width:40em;margin-top:14px;color:var(--ink-2);font-size:17.5px}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;margin-top:18px;font-size:13px;color:var(--ink-3)}
+.meta a{color:var(--ink-3)}
+
+.section{padding-block:44px 8px}
+.section > h2{font-family:var(--serif);font-size:28px;line-height:1.25}
+.section > .sub{color:var(--ink-2);margin-top:6px;max-width:44em}
+
+.map{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:22px}
+.mcard{display:flex;flex-direction:column;gap:10px;padding:18px 18px 16px;background:var(--surface);border:1px solid var(--line);border-radius:10px;text-decoration:none;color:inherit;transition:border-color .15s,transform .15s}
+.mcard:hover{border-color:var(--accent);transform:translateY(-1px)}
+@media (prefers-reduced-motion: reduce){.mcard{transition:none}.mcard:hover{transform:none}}
+.mcard .head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.code{font-family:var(--mono);font-weight:600;color:var(--accent);font-size:15px;letter-spacing:.02em}
+.mcard h3{font-size:18px;font-weight:600}
+.io{font-size:14px;color:var(--ink-2);line-height:1.55;display:grid;grid-template-columns:auto 1fr;gap:3px 10px;margin:0}
+.io dt{color:var(--ink-3);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;padding-top:2px}
+.io dd{margin:0}
+.status{display:flex;flex-wrap:wrap;gap:6px;margin-top:auto;padding-top:4px}
+.pill{font-size:12.5px;line-height:1;padding:6px 9px;border-radius:999px;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;font-weight:500}
+.pill::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.ok{color:var(--ok);background:var(--ok-soft)}
+.warn{color:var(--warn);background:var(--warn-soft)}
+.bad{color:var(--bad);background:var(--bad-soft)}
+.mcard.wide{grid-column:1/-1;flex-direction:row;flex-wrap:wrap;align-items:center;gap:10px 28px;border-style:dashed}
+.mcard.wide .head{min-width:240px}
+.mcard.wide .io{flex:1 1 320px}
+.mcard.wide .status{margin-top:0;padding-top:0}
+.tag{font-size:11.5px;color:var(--ink-3);border:1px solid var(--line);border-radius:4px;padding:1px 6px;letter-spacing:.04em}
+.legend{display:flex;flex-wrap:wrap;gap:8px 16px;margin-top:14px;font-size:13px;color:var(--ink-3)}
+
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:28px;margin-top:22px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:20px}
+.panel h3{font-size:16px;font-weight:600;margin-bottom:14px}
+.flows{display:grid;gap:14px}
+.flow .when{font-size:14px;color:var(--ink-2);margin-bottom:6px}
+.chain{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.chip{font-family:var(--mono);font-size:13px;font-weight:600;padding:4px 9px;border-radius:6px;background:var(--accent-soft);color:var(--accent);text-decoration:none}
+.chip small{font-family:var(--sans);font-weight:500;font-size:12px;margin-left:4px}
+.arr{color:var(--ink-3);font-size:13px}
+.waves{list-style:none;margin:0;padding:0;display:grid}
+.waves li{display:grid;grid-template-columns:64px 1fr;gap:12px;padding:12px 0;border-top:1px solid var(--line)}
+.waves li:first-child{border-top:0;padding-top:0}
+.waves .n{font-family:var(--mono);font-size:12.5px;color:var(--ink-3);padding-top:3px;text-transform:uppercase;letter-spacing:.04em}
+.waves b{font-weight:600}
+.waves p{font-size:14px;color:var(--ink-2);margin-top:2px}
+.waves li.gap .n{color:var(--bad)}
+
+.body{display:grid;grid-template-columns:220px minmax(0,1fr);gap:44px;margin-top:22px;align-items:start}
+.nav{position:sticky;top:calc(env(safe-area-inset-top,0px) + 20px)}
+.nav ol{list-style:none;margin:0;padding:0;display:grid;gap:2px}
+.nav a{display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:6px;text-decoration:none;color:var(--ink-2);font-size:14px;line-height:1.35}
+.nav a .code{font-size:13px;color:var(--ink-3)}
+.nav a:hover{background:var(--surface-2)}
+.nav a.on{background:var(--accent-soft);color:var(--ink)}
+.nav a.on .code{color:var(--accent)}
+.nav .dot{width:7px;height:7px;border-radius:50%;margin-left:auto;flex:none}
+.dot.ok{background:var(--ok)} .dot.warn{background:var(--warn)}
+.nav .tools{margin-top:16px;padding-top:14px;border-top:1px solid var(--line)}
+.btn{font:inherit;font-size:13px;color:var(--ink-2);background:none;border:1px solid var(--line);border-radius:6px;padding:6px 10px;cursor:pointer}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+
+.module{padding-block:8px 48px;border-top:1px solid var(--line);scroll-margin-top:16px}
+.module:first-child{border-top:0}
+.mhead{display:flex;flex-wrap:wrap;align-items:flex-end;gap:8px 18px;padding-top:32px}
+.mhead .big{font-family:var(--mono);font-size:44px;line-height:1;font-weight:600;color:var(--accent)}
+.mhead h2{font-family:var(--serif);font-size:32px;line-height:1.15}
+.mhead .status{margin:0 0 4px auto;padding:0}
+.flowline{display:flex;flex-wrap:wrap;gap:4px 18px;margin-top:14px;font-size:14px;color:var(--ink-2)}
+.flowline span b{color:var(--ink-3);font-weight:500;margin-right:6px;font-size:11.5px;letter-spacing:.1em;text-transform:uppercase}
+.prose{max-width:44em}
+.block{margin-top:26px}
+.label{font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:8px;font-weight:500}
+.prose strong,.take strong,.case strong,.traps strong,.assets strong,.people strong,td strong{font-weight:600}
+ul.clean,ol.clean{margin:0;padding-left:1.2em;display:grid;gap:6px}
+ol.clean li::marker{font-family:var(--mono);color:var(--ink-3)}
+
+.table-wrap{overflow-x:auto;margin-top:4px;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14.5px;line-height:1.55}
+th,td{text-align:left;vertical-align:top;padding:10px 14px;border-top:1px solid var(--line)}
+thead th{border-top:0;font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);font-weight:500;background:var(--surface-2)}
+td:first-child{font-weight:600;min-width:120px}
+.hl td{background:var(--warn-soft)}
+.tabnum{font-variant-numeric:tabular-nums}
+
+.assets{list-style:none;margin:0;padding:0;display:grid;gap:10px;max-width:46em}
+.assets li{padding-left:18px;position:relative}
+.assets li::before{content:"";position:absolute;left:0;top:.62em;width:7px;height:7px;border:1.5px solid var(--ink-3);border-radius:2px}
+.assets li.key{background:var(--star-soft);border-radius:8px;padding:10px 14px 10px 34px}
+.assets li.key::before{content:"★";border:0;width:auto;height:auto;left:13px;top:10px;color:var(--star);font-size:14px;line-height:1.65}
+.assets b{font-weight:600}
+
+.people{display:flex;gap:14px;align-items:flex-start;max-width:46em;padding:14px 16px;border-radius:8px;background:var(--surface-2)}
+.people .label{margin:3px 0 0;white-space:nowrap}
+.people.alert{background:var(--bad-soft)}
+
+.traps{list-style:none;margin:0;padding:0;display:grid;gap:8px;max-width:46em}
+.traps li{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:4px 16px;padding:10px 0;border-top:1px dashed var(--line)}
+.traps li:first-child{border-top:0;padding-top:0}
+.traps .bad-t{color:var(--bad)}
+.traps .fix{color:var(--ink-2)}
+.traps .fix::before{content:"→ ";color:var(--ink-3)}
+
+details.peers{margin-top:30px;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+details.peers > summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:10px;padding:14px 18px;font-weight:600}
+details.peers > summary::-webkit-details-marker{display:none}
+details.peers > summary::after{content:"Collapse";margin-left:auto;font-weight:400;font-size:13px;color:var(--ink-3)}
+details.peers:not([open]) > summary::after{content:"Expand"}
+details.peers > summary .count{font-family:var(--mono);font-size:12.5px;font-weight:500;color:var(--ink-3)}
+.peers-body{padding:0 18px 18px;display:grid;gap:14px}
+.case{display:grid;grid-template-columns:190px minmax(0,1fr);gap:4px 18px;padding-top:14px;border-top:1px solid var(--line);font-size:15px}
+.case h4{font-size:14.5px;font-weight:600;line-height:1.45}
+.case h4 span{display:block;font-weight:400;font-size:12.5px;color:var(--ink-3);margin-top:2px}
+.case p{color:var(--ink-2)}
+.case ul{margin:0;padding-left:1.1em;color:var(--ink-2);display:grid;gap:4px}
+.see{font-size:12.5px;color:var(--ink-3)}
+.take{border-radius:8px;padding:14px 16px;background:var(--accent-soft);font-size:15px}
+.take .label{color:var(--accent);margin-bottom:4px}
+.take ol{margin:6px 0;padding-left:1.3em;display:grid;gap:4px}
+.note{font-size:13px;color:var(--ink-3)}
+
+.keyassets{list-style:none;margin:22px 0 0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.keyassets li{background:var(--star-soft);border-radius:10px;padding:16px}
+.keyassets .code{color:var(--star)}
+.keyassets b{display:block;font-size:17px;font-weight:600;margin-top:6px;line-height:1.3}
+.keyassets p{font-size:14px;color:var(--ink-2);margin-top:4px}
+.closing{margin-top:16px;color:var(--ink-2);max-width:44em}
+
+.sources{columns:2;column-gap:40px;margin-top:18px;font-size:14px}
+.sources h3{font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);font-weight:500;margin:0 0 6px;break-after:avoid}
+.sources ul{list-style:none;margin:0 0 18px;padding:0;display:grid;gap:4px;break-inside:avoid}
+.sources a{text-decoration:none}
+.sources a:hover{text-decoration:underline}
+.sources span{color:var(--ink-3);font-size:12px;font-family:var(--mono)}
+
+@media (max-width:980px){
+  .map{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .two{grid-template-columns:1fr}
+  .body{grid-template-columns:1fr;gap:0}
+  .nav{top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);margin-inline:-20px;padding:10px 20px;border-bottom:1px solid var(--line)}
+  .nav ol{display:flex;overflow-x:auto;gap:6px;scrollbar-width:none}
+  .nav a{white-space:nowrap;border:1px solid var(--line);padding:5px 10px}
+  .nav a .name{display:none}
+  .nav .dot{margin-left:0}
+  .nav .tools{display:none}
+  .keyassets{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .module{scroll-margin-top:70px}
+}
+@media (max-width:640px){
+  body{font-size:15.5px}
+  .map{grid-template-columns:1fr}
+  .case{grid-template-columns:1fr}
+  .traps li{grid-template-columns:1fr}
+  .people{flex-direction:column;gap:4px}
+  .mhead .big{font-size:36px}
+  .mhead h2{font-size:26px}
+  .mhead .status{margin-left:0}
+  .keyassets{grid-template-columns:1fr}
+  .sources{columns:1}
+}
+</style>
+
+<div class="wrap">
+<header class="top">
+  <div class="eyebrow">Vffice · Copilot Consulting · Internal</div>
+  <h1>Seven Capability Modules</h1>
+  <p class="lede">For the mid-market (roughly 50–2,000 employees), industry-agnostic, no BC/ERP dependency. For each module: the assets to build, the people it needs, where the traps are — and how others have done it. Modules are assembled to fit the client; they are not a fixed sequence.</p>
+  <div class="meta"><span>2026-09-15</span><span>Guiding principles: Client Walkthrough Playbook</span><span>Comparison figures are as stated by source; self-reported data is flagged</span><a href="https://claude.ai/artifact/5ebfhFFQTrgcVz2HVKHszA">中文版</a></div>
+</header>
+
+<section class="section" aria-labelledby="map-h">
+  <h2 id="map-h">Modules at a glance</h2>
+  <p class="sub">Select a module to jump to its detail. Status shows whether we can deliver it today.</p>
+  <div class="map">
+    <a class="mcard" href="#m1">
+      <div class="head"><span class="code">M1</span><h3>Usage Baseline Audit</h3></div>
+      <dl class="io"><dt>In</dt><dd>License assignments + M365 usage data</dd><dt>Out</dt><dd>Four-tier user segmentation, dead-zone list, power-user list</dd></dl>
+      <div class="status"><span class="pill ok">Deliverable</span></div>
+    </a>
+    <a class="mcard" href="#m2">
+      <div class="head"><span class="code">M2</span><h3>Tiered Enablement</h3></div>
+      <dl class="io"><dt>In</dt><dd>Tier lists from M1</dd><dt>Out</dt><dd>Tiered training, champion network, scenario cards</dd></dl>
+      <div class="status"><span class="pill ok">Deliverable</span></div>
+    </a>
+    <a class="mcard" href="#m3">
+      <div class="head"><span class="code">M3</span><h3>Scenario Discovery</h3></div>
+      <dl class="io"><dt>In</dt><dd>The client's actual work</dd><dt>Out</dt><dd>Structured list of candidate scenarios</dd></dl>
+      <div class="status"><span class="pill ok">Deliverable</span></div>
+    </a>
+    <a class="mcard" href="#m4">
+      <div class="head"><span class="code">M4</span><h3>Scenario Assessment</h3></div>
+      <dl class="io"><dt>In</dt><dd>Scenario list</dd><dt>Out</dt><dd>Priority ranking; do / don't / defer</dd></dl>
+      <div class="status"><span class="pill ok">Deliverable</span></div>
+    </a>
+    <a class="mcard" href="#m5">
+      <div class="head"><span class="code">M5</span><h3>Scenario Implementation</h3></div>
+      <dl class="io"><dt>In</dt><dd>Selected scenarios</dd><dt>Out</dt><dd>Something usable + a named owner</dd></dl>
+      <div class="status"><span class="pill ok">Light: yes</span><span class="pill warn">Medium: practise first</span><span class="pill bad">Heavy: not yet</span></div>
+    </a>
+    <a class="mcard" href="#m6">
+      <div class="head"><span class="code">M6</span><h3>ROI Measurement &amp; Review</h3></div>
+      <dl class="io"><dt>In</dt><dd>Baseline + usage data</dd><dt>Out</dt><dd>Value report, next-round backlog</dd></dl>
+      <div class="status"><span class="pill warn">Lacks baseline discipline</span></div>
+    </a>
+    <a class="mcard wide" href="#m7">
+      <div class="head"><span class="code">M7</span><h3>Governance &amp; Risk</h3><span class="tag">Cross-cutting</span></div>
+      <dl class="io"><dt>In</dt><dd>Current state of data and permissions</dd><dt>Out</dt><dd>Governance recommendation pack, control rules</dd></dl>
+      <div class="status"><span class="pill warn">Assessment: after one practice run</span><span class="pill bad">Remediation: skills gap</span></div>
+    </a>
+  </div>
+  <div class="legend"><span class="pill ok">Deliverable today</span><span class="pill warn">Needs practice or discipline</span><span class="pill bad">Capability gap — hire or partner</span></div>
+</section>
+
+<section class="section" aria-labelledby="plan-h">
+  <h2 id="plan-h">How to assemble, what to build first</h2>
+  <div class="two">
+    <div class="panel">
+      <h3>Assemble by client situation</h3>
+      <div class="flows">
+        <div class="flow"><div class="when">Bought licenses, nothing happened</div>
+          <div class="chain"><a class="chip" href="#m1">M1</a><span class="arr">→</span><a class="chip" href="#m2">M2</a><span class="arr">→</span><a class="chip" href="#m6">M6</a></div></div>
+        <div class="flow"><div class="when">Wants to go deeper</div>
+          <div class="chain"><a class="chip" href="#m3">M3</a><span class="arr">→</span><a class="chip" href="#m4">M4</a><span class="arr">→</span><a class="chip" href="#m5">M5</a><span class="arr">→</span><a class="chip" href="#m6">M6</a></div></div>
+        <div class="flow"><div class="when">Hasn't started at all</div>
+          <div class="chain"><a class="chip" href="#m3">M3<small>light</small></a><span class="arr">→</span><a class="chip" href="#m5">M5<small>light tier</small></a><span class="arr">→</span><a class="chip" href="#m6">M6</a></div></div>
+        <div class="flow"><div class="when">Regulated client (life sciences, finance, legal)</div>
+          <div class="chain"><a class="chip" href="#m7">M7<small>first</small></a><span class="arr">→</span><span class="arr">other modules as usual</span></div></div>
+      </div>
+    </div>
+    <div class="panel">
+      <h3>Build priority: most clients covered × closest to what we can do</h3>
+      <ol class="waves">
+        <li><span class="n">Wave 1</span><div><b>M1 + M2 + the baseline part of M6</b><p>Covers the largest pool — mid-market companies that bought licenses and saw nothing happen. No development skills needed. The baseline form must go live together with M2; miss that window and it can't be recovered.</p></div></li>
+        <li><span class="n">Wave 2</span><div><b>M3 + M4</b><p>The entry to every deep engagement. The scenario library, scoring definitions and role cards accumulate across clients — start early.</p></div></li>
+        <li><span class="n">Wave 3</span><div><b>M5 light → medium tier</b><p>Light tier ships now. For medium, build our own demo agent and work through knowledge curation and citation accuracy before committing to timelines. Heavy tier not yet.</p></div></li>
+        <li class="gap"><span class="n">Gap</span><div><b>M7</b><p>Deliver the assessment ourselves after one practice run on Microsoft's oversharing blueprint; label taxonomy, DLP and permission remediation via partners short-term, hires mid-term. Be honest with regulated clients about the boundary.</p></div></li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<section class="section" aria-labelledby="detail-h">
+  <h2 id="detail-h">Module detail</h2>
+  <div class="body">
+    <nav class="nav" aria-label="Modules">
+      <ol>
+        <li><a href="#m1"><span class="code">M1</span><span class="name">Usage Baseline Audit</span><span class="dot ok"></span></a></li>
+        <li><a href="#m2"><span class="code">M2</span><span class="name">Tiered Enablement</span><span class="dot ok"></span></a></li>
+        <li><a href="#m3"><span class="code">M3</span><span class="name">Scenario Discovery</span><span class="dot ok"></span></a></li>
+        <li><a href="#m4"><span class="code">M4</span><span class="name">Scenario Assessment</span><span class="dot ok"></span></a></li>
+        <li><a href="#m5"><span class="code">M5</span><span class="name">Implementation</span><span class="dot warn"></span></a></li>
+        <li><a href="#m6"><span class="code">M6</span><span class="name">ROI Measurement</span><span class="dot warn"></span></a></li>
+        <li><a href="#m7"><span class="code">M7</span><span class="name">Governance &amp; Risk</span><span class="dot warn"></span></a></li>
+      </ol>
+      <div class="tools"><button class="btn" id="toggle-peers" type="button">Collapse all comparisons</button></div>
+    </nav>
+
+    <div class="modules">
+
+<!-- M1 -->
+<article class="module" id="m1">
+  <div class="mhead"><span class="big">M1</span><h2>Usage Baseline Audit</h2><div class="status"><span class="pill ok">Deliverable</span></div></div>
+  <div class="flowline"><span><b>In</b>License assignments + M365 usage data</span><span><b>Out</b>Four-tier segmentation, dead-zone list, power-user list</span></div>
+
+  <div class="block prose"><div class="label">What it is</div>
+    <p>Pull the client's license assignment list and M365/Copilot usage data and place everyone into four tiers: <strong>not licensed / licensed but never used / low-frequency / heavy use</strong>. Cross-tabulate department × app to find dead zones where a whole department is at zero. Flag permission and oversharing risks along the way — these feed M7.</p></div>
+  <div class="block prose"><div class="label">How</div>
+    <p>Data comes from the M365 admin center usage reports, Copilot usage analytics and the license list. Three tasks: segment, find dead zones, interview 3–5 power users (these interviews double as seeds for M3 — do them once).</p></div>
+
+  <div class="block"><div class="label">Assets to build</div>
+    <ul class="assets">
+      <li><b>Data request checklist</b> — which reports the client must provide, where to export them, what permissions are needed. Without it every engagement starts from scratch, and permissions often take two weeks</li>
+      <li><b>Tier definitions</b> — what counts as low-frequency or heavy must be uniform across the company, or two consultants on the same client reach two conclusions</li>
+      <li><b>Diagnostic report template</b> — four fixed charts: tier funnel, department heatmap, app distribution, dead-zone list</li>
+      <li><b>Power-user interview guide</b> — 15–20 minutes; ask about concrete usage, not how they feel about it</li>
+    </ul></div>
+
+  <div class="block people"><div class="label">People</div><p>Can read M365 usage reports and build pivot tables. No development skills needed.</p></div>
+
+  <div class="block"><div class="label">Traps</div>
+    <ul class="traps">
+      <li><span class="bad-t">Client can't provide data or lacks permissions — the module stalls</span><span class="fix">Put the permission request in the kick-off, not at the start of work</span></li>
+      <li><span class="bad-t">Trusting the overall active rate: 85% "active" may mean once a month</span><span class="fix"><strong>Always look at the frequency distribution</strong></span></li>
+      <li><span class="bad-t">Using the report to shame client IT — they usually did their best</span><span class="fix">Frame it as "let's find where the value is together"</span></li>
+    </ul></div>
+
+  <details class="peers" open>
+    <summary>How others do it <span class="count">3 comparisons</span></summary>
+    <div class="peers-body">
+      <div class="case"><h4>Microsoft internally<span>300,000+ employees</span></h4>
+        <p>Cohorts cut along "internal organization × region", each treated as its own organization with its own champions and leaders. Data from admin center reports, Copilot Dashboard and Viva Insights, <strong>paired with Viva Pulse / Glint surveys</strong>. The sales-team retrospective: usage data alone isn't enough — you need surveys and in-the-moment feedback to see where people are stuck.</p></div>
+      <div class="case"><h4>UK Dept for Business and Trade (DBT)<span>1,000 licenses</span></h4>
+        <p>Two-thirds used it at least weekly, but <strong>only 30% daily</strong>; across 63 working days, <strong>1.14 actions per user per day</strong>; Loop under 1%, OneNote 3%, PowerPoint / Excel peaking at 7%.</p></div>
+      <div class="case"><h4>Practical365 method<span>Usage reports + unified audit log</span></h4>
+        <p>Score each user: <span class="mono">(days since last use ÷ apps used) − (total interactions ÷ 10)</span>; ≥30 flags low utilization. Someone who uses Copilot heavily but only in Outlook isn't misread as inactive.</p></div>
+      <div class="take"><div class="label">What it means for us</div>DBT is the public example of "85% active might mean once a month" — the frequency and app distribution charts are non-negotiable. Start tier definitions from the Practical365 formula and tune thresholds per client. Microsoft pairs data with listening — the same approach as our "segmentation + 3–5 power-user interviews".</div>
+    </div>
+  </details>
+</article>
+
+<!-- M2 -->
+<article class="module" id="m2">
+  <div class="mhead"><span class="big">M2</span><h2>Tiered Enablement</h2><div class="status"><span class="pill ok">Deliverable</span></div></div>
+  <div class="flowline"><span><b>In</b>Tier lists from M1</span><span><b>Out</b>Tiered training, champion network, scenario cards</span></div>
+
+  <div class="block prose"><div class="label">What it is</div>
+    <p>Coach each M1 tier separately. The tiers have completely different goals — lumping them together is exactly why the previous round failed.</p></div>
+
+  <div class="block"><div class="label">How</div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Tier</th><th>Goal</th><th>Approach</th></tr></thead>
+      <tbody>
+        <tr><td>Never used</td><td>A <strong>first successful experience</strong></td><td>60–90 minutes; teach one scenario closest to their job, do it live, leave with one working prompt. No feature tour</td></tr>
+        <tr><td>Low-frequency</td><td>From occasional to <strong>daily</strong></td><td>Group by role; 3–5 high-frequency scenarios + prompt patterns; teach "how to break down your own work and which part can go to AI"</td></tr>
+        <tr><td>Heavy use</td><td><strong>Replicate them</strong></td><td>Not training — interviewing. Distill what they figured out into assets, then invite them to be champions</td></tr>
+      </tbody>
+    </table></div></div>
+
+  <div class="block"><div class="label">Assets to build</div>
+    <ul class="assets">
+      <li class="key"><b>Role scenario cards</b> — the most reusable asset. One each for project manager, financial analyst, HR, sales, admin, legal: what the role repeats daily, matching prompts, before/after. <strong>Reused across clients — by client 5 they should cover most roles</strong></li>
+      <li><b>Three tiered course packs</b> — every session tied to a real scenario; no "feature introduction" sessions</li>
+      <li><b>Prompt pattern library</b> — patterns, not a giant prompt dump: summarize, draft, rewrite, analyze, Q&amp;A, each with structure and examples</li>
+      <li><b>Champion handbook</b> — what champions do each month, who to go to, how to escalate</li>
+      <li><b>Post-training feedback form</b> — two weeks after training: useful or not, used for what, stuck where. <strong>Also a data source for M6</strong></li>
+    </ul></div>
+
+  <div class="block people"><div class="label">People</div><p>At least one person who can rewrite prompts on the spot <strong>and explain why</strong> (button-clickers won't hold up); one person who can run a champion community.</p></div>
+
+  <div class="block"><div class="label">Traps</div>
+    <ul class="traps">
+      <li><span class="bad-t">One-size-fits-all training</span><span class="fix">Repeats the client's last failure</span></li>
+      <li><span class="bad-t">No feedback collection after training</span><span class="fix">Nobody knows if it worked, and M6 has no data</span></li>
+      <li><span class="bad-t">Picking senior champions who don't do the work</span><span class="fix">Pick people who actually use it, regardless of seniority</span></li>
+    </ul></div>
+
+  <details class="peers" open>
+    <summary>How others do it <span class="count">4 comparisons</span></summary>
+    <div class="peers-body">
+      <div class="case"><h4>KOHLER<span>10,000+ employees</span></h4>
+        <p>Tiered by business segment, entry-level to advanced, framed as "business skilling": dissect processes and turn them into AI workflows — not feature training. <strong>98% adoption in 40 days</strong> against a goal of 95% in 9 months. <span class="see">See case library</span></p></div>
+      <div class="case"><h4>Australian Government trial<span>7,600+ staff, 60+ agencies</span></h4>
+        <p>Of those who received <strong>3 or more</strong> forms of training, 75% felt confident — <strong>28 percentage points higher than those with only one</strong>.</p></div>
+      <div class="case"><h4>Microsoft Copilot Champs<span>~10,000 people</span></h4>
+        <p>Recruits generalists who "know a little about a lot", regardless of seniority, and finds early adopters via usage surveys. Onboarding: welcome email + baseline training + completion badge + kick-off + baseline poll. Ongoing: Viva Engage community, Teams channel, train-the-trainer, community calls, shout-outs. Some champions run 1–2 demos a week. "It takes just one magical use case to turn a skeptic into a champion." Microsoft also claims 30% more active days for community participants (vendor internal study).</p></div>
+      <div class="case"><h4>Microsoft sales-team retrospective</h4>
+        <p>Role-based immersion clearly beat generic guidance; sustained use comes from <strong>habit, not enthusiasm</strong> — embed simple prompts into existing workflows.</p></div>
+      <div class="take"><div class="label">What it means for us</div>The Australian data is hard evidence that one training session isn't enough. Scenario cards, champion Q&amp;A and feedback collection all count as touchpoints — price for multiple touchpoints. Microsoft's champion onboarding can go almost directly into our handbook. "One magical use case" is the same judgment as teaching the never-used tier just one scenario.</div>
+    </div>
+  </details>
+</article>
+
+<!-- M3 -->
+<article class="module" id="m3">
+  <div class="mhead"><span class="big">M3</span><h2>Scenario Discovery</h2><div class="status"><span class="pill ok">Deliverable</span></div></div>
+  <div class="flowline"><span><b>In</b>The client's actual work</span><span><b>Out</b>Structured list of candidate scenarios</span></div>
+
+  <div class="block prose"><div class="label">What it is</div>
+    <p>Collect candidate scenarios from real work and produce a structured list that can be scored in the next step.</p></div>
+
+  <div class="block prose"><div class="label">How · four sources, ranked by return</div>
+    <ol class="clean">
+      <li><strong>Mining power users</strong> — highest return; the scenarios are already validated by real work</li>
+      <li><strong>Role workshops</strong> — group by work pattern (not department) and list the work that repeats every week</li>
+      <li><strong>High-frequency question analysis</strong> — IT tickets, repeated internal questions, "how do I…" emails. PwC's 90% how-to tickets show this is a gold mine</li>
+      <li><strong>Leadership pain-point interviews</strong> — adds the strategic view, but never on its own; leaders' pain points are often not the front line's</li>
+    </ol>
+    <p style="margin-top:12px">Every scenario records the same fields: who does it, what the task is, how often, how long it takes now, where the input lives, what the output is, who reviews it.</p></div>
+
+  <div class="block"><div class="label">Assets to build</div>
+    <ul class="assets">
+      <li><b>Scenario capture form</b> — fixed fields; missing fields mean it can't be scored later</li>
+      <li><b>Role workshop agenda + whiteboard template</b></li>
+      <li class="key"><b>Cross-client scenario library</b> — the core of how the practice gets stronger. By client 5, most of a new client's scenarios should be familiar, cutting discovery from days to hours</li>
+    </ul></div>
+
+  <div class="block people"><div class="label">People</div><p>A workshop facilitator who can get the front line talking and keep leadership from dominating.</p></div>
+
+  <div class="block"><div class="label">Traps</div>
+    <ul class="traps">
+      <li><span class="bad-t">Starting with "what features do you want"</span><span class="fix">Guaranteed failure</span></li>
+      <li><span class="bad-t">Unstructured notes</span><span class="fix">M4 can't happen</span></li>
+      <li><span class="bad-t">Scenarios at the grain of "write reports"</span><span class="fix">Needs to be "every Monday, explain last week's sales anomalies to the regional manager"</span></li>
+    </ul></div>
+
+  <details class="peers" open>
+    <summary>How others do it <span class="count">4 comparisons</span></summary>
+    <div class="peers-body">
+      <div class="case"><h4>Microsoft role-scenario playbook</h4>
+        <p><strong>Ready</strong> (leadership alignment, pick priority roles) → <strong>Engage</strong> (sessions with that role to uncover use cases) → <strong>Deliver</strong> (hero scenarios with value articulated) → <strong>Share</strong> (socialize company-wide). Roles first, then dig — no company-wide dragnet.</p></div>
+      <div class="case"><h4>Copilot Scenario Library<span>Microsoft, public and free</span></h4>
+        <p>Organized by department (legal, operations, communications, IT…). Each task: action-oriented title (e.g. "Draft a shift summary") + how + which app + benefit, with KPIs on the page.</p></div>
+      <div class="case"><h4>Grupo Bimbo<span>Global audit team, 100+ auditors</span></h4>
+        <p>Scenarios came from an internal hackathon where auditors raised their own pain points. <strong>Those people became key users in development and testing</strong> — which is why the solution fit real work and earned trust early.</p></div>
+      <div class="case"><h4>Accenture / KPMG</h4>
+        <p>Both did persona research: Accenture interviewed developers, testers, scrum masters and product owners; KPMG defined 28 high-value personas and wrote 88 Day-in-the-Life guides for a mining client. <span class="see">See case library</span></p></div>
+      <div class="take"><div class="label">What it means for us</div>The Scenario Library is a <strong>cold-start seed</strong> for our cross-client library, but it stops at generic tasks — no frequency, current time, input location or reviewer. Those are exactly the fields M4 scores on, and the difference between our capture form and theirs. Grupo Bimbo shows the people who articulate pain best become the champions and acceptance users — put them on the candidate list during the workshop.</div>
+    </div>
+  </details>
+</article>
+
+<!-- M4 -->
+<article class="module" id="m4">
+  <div class="mhead"><span class="big">M4</span><h2>Scenario Assessment &amp; Selection</h2><div class="status"><span class="pill ok">Deliverable</span></div></div>
+  <div class="flowline"><span><b>In</b>Scenario list</span><span><b>Out</b>Priority ranking; do / don't / defer</span></div>
+
+  <div class="block prose"><div class="label">What it is</div>
+    <p>Score and rank scenarios into four explicit groups: <strong>do now / queue / fix data or governance first / don't do</strong>. "Don't do" must be said out loud with reasons — <strong>that is part of the consulting value</strong>, not a cop-out.</p></div>
+
+  <div class="block"><div class="label">How · six-dimension scoring</div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Dimension</th><th>Question</th></tr></thead>
+      <tbody>
+        <tr><td>Business value</td><td>Does it affect cost, revenue, speed, quality or compliance?</td></tr>
+        <tr><td>Frequency</td><td>Daily / weekly / monthly / occasional</td></tr>
+        <tr><td>Copilot fit</td><td>Is it information-, writing-, meeting- or analysis-heavy?</td></tr>
+        <tr class="hl"><td>Data readiness</td><td>Is the content accessible, structured, correctly permissioned? — <strong>most often skipped, most likely to blow up</strong></td></tr>
+        <tr><td>Risk level</td><td>Could errors cause legal, security or customer harm? Can human review catch them?</td></tr>
+        <tr><td>User willingness</td><td>Will this group actually change how they work?</td></tr>
+      </tbody>
+    </table></div></div>
+
+  <div class="block"><div class="label">Assets to build</div>
+    <ul class="assets">
+      <li class="key"><b>Scoring sheet with weights and definitions</b> — without shared definitions, consultants score differently and the client notices</li>
+      <li><b>Data readiness checklist</b> — where content lives, format, permissions, update frequency, maintainer</li>
+      <li><b>Implementation tier decision tree</b> — when to go light / medium / heavy</li>
+    </ul></div>
+
+  <div class="block people"><div class="label">People</div><p>Technical feasibility judgment + business value judgment. Both must be in the room; missing either leads to wrong picks.</p></div>
+
+  <div class="block"><div class="label">Traps</div>
+    <ul class="traps">
+      <li><span class="bad-t">Letting the client score — everything scores high</span><span class="fix">We score, then align definitions with the client</span></li>
+      <li><span class="bad-t">Skipping data readiness</span><span class="fix">The number one reason projects blow up midway</span></li>
+      <li><span class="bad-t">Too many in the first batch</span><span class="fix"><strong>1–3</strong></span></li>
+    </ul></div>
+
+  <details class="peers" open>
+    <summary>How others do it <span class="count">3 comparisons</span></summary>
+    <div class="peers-body">
+      <div class="case"><h4>Microsoft BXT framework<span>Use-case evaluation for partners</span></h4>
+        <p>Three areas × three components, each 1–5: <strong>Business</strong> (strategy alignment / business value / change timeframe), <strong>Experience</strong> (key personas / value proposition / change resistance), <strong>Technology</strong> (implementation risk / safeguards / AI fit). Rolled into two axes — strategic business impact and executional fit — landing in <strong>Shelve / Research / Incubate / Accelerate to MVP</strong>. Recommends scoring with a wider group for buy-in.</p></div>
+      <div class="case"><h4>Microsoft Cloud Adoption Framework</h4>
+        <p>Judge feasibility by AI maturity first (the lowest level can already do any Copilot solution); make the first proof of concept <strong>internal and non-customer-facing</strong>; Copilot returns value in "days to weeks"; add <strong>20–30%</strong> buffer to estimates.</p></div>
+      <div class="case"><h4>Public "poor-fit zones"</h4>
+        <ul>
+          <li>UK DBT: Excel analysis with Copilot was <strong>slower and worse quality</strong>; PowerPoint 7+ minutes faster but lower quality and accuracy; 22% encountered hallucinations</li>
+          <li>Australian Treasury: nearly two-thirds found it fit for basic admin, limited value for complex work</li>
+          <li>Australian Government trial: poor Excel functionality, Outlook access issues; verifying and editing output offset some savings</li>
+        </ul></div>
+      <div class="take"><div class="label">What it means for us</div>BXT maps onto our six dimensions ("change resistance" ≈ "user willingness") but <strong>doesn't break out data readiness</strong> — we're right to. The four-quadrant chart works directly as the client "do / don't" slide. Stakeholder participation belongs at the alignment step; we still score first. Write the poor-fit zones into the "Copilot fit" definitions: Excel analysis, accuracy-critical finished decks, complex professional judgment — a low score should rest on public evidence.</div>
+    </div>
+  </details>
+</article>
+
+<!-- M5 -->
+<article class="module" id="m5">
+  <div class="mhead"><span class="big">M5</span><h2>Scenario Implementation</h2><div class="status"><span class="pill ok">Light: yes</span><span class="pill warn">Medium: practise first</span><span class="pill bad">Heavy: not yet</span></div></div>
+  <div class="flowline"><span><b>In</b>Selected scenarios</span><span><b>Out</b>Something usable + instructions + a named owner</span></div>
+
+  <div class="block"><div class="label">How · three tiers, start light by default</div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Tier</th><th>Contents</th><th>Duration</th></tr></thead>
+      <tbody>
+        <tr><td>Light</td><td>Prompt templates + document templates + process tweaks + quality checklist; stays in the standard M365 interface</td><td class="tabnum">1–2 weeks</td></tr>
+        <tr><td>Medium</td><td>Copilot Studio agent + knowledge grounding + traceable citations, published to Teams</td><td class="tabnum">4–8 weeks</td></tr>
+        <tr><td>Heavy</td><td>Business system integration, two-way actions, exception handling and human fallback</td><td>Longer, higher risk</td></tr>
+      </tbody>
+    </table></div>
+    <p class="prose" style="margin-top:12px"><strong>Most scenarios should stop at the light tier.</strong> The real work in medium is knowledge curation and citation accuracy, not building the agent — Dunaway's citation accuracy started around 70% and took dedicated engineering to fix.</p></div>
+
+  <div class="block"><div class="label">Assets to build</div>
+    <ul class="assets">
+      <li><b>Prompt and document template libraries</b> (organized by scenario type)</li>
+      <li><b>Agent reference architecture</b> — borrow Dunaway's: knowledge manifest → automated ingestion → single source of truth → search index → citation enhancement</li>
+      <li><b>Knowledge-source curation method</b> — how to inventory, clean, and who maintains it. <strong>Price it as its own line; don't hide it</strong></li>
+      <li><b>Quality checklist</b> — is output correct, are citations accurate, when must it escalate to a human</li>
+      <li><b>Acceptance criteria</b> — what counts as done</li>
+    </ul></div>
+
+  <div class="block people"><div class="label">People</div><p>Light: a consultant is enough. Medium: Copilot Studio + retrieval/knowledge-base skills (<strong>internal practice run first</strong>). Heavy: integration developers — not taking these on yet.</p></div>
+
+  <div class="block"><div class="label">Traps</div>
+    <ul class="traps">
+      <li><span class="bad-t">Skipping light, going straight to medium</span><span class="fix">Burns budget before value is proven</span></li>
+      <li><span class="bad-t">Hiding knowledge curation effort in the quote</span><span class="fix">Guaranteed blow-up midway</span></li>
+      <li><span class="bad-t">Making it fully automated</span><span class="fix">Professional judgment stays with people</span></li>
+    </ul></div>
+
+  <details class="peers" open>
+    <summary>How others do it <span class="count">4 comparisons</span></summary>
+    <div class="peers-body">
+      <div class="case"><h4>Grupo Bimbo<span>Audit · what medium tier looks like</span></h4>
+        <p>Two Copilot Studio agents: Comatrix drafts risk and control matrices from global procedures; Audit Assist answers methodology questions and retrieves templates. Knowledge source: SharePoint content the QA team <strong>already maintained</strong>, only separated into procedures, templates and standards. Deterministic orchestration; <strong>iterating on system prompts was the hardest part</strong>; auditors still review output. Planning time down ~20%; matrices from ~2 days to under half a day. Yet by early 2026 only <strong>50–60%</strong> of auditors were active users.</p></div>
+      <div class="case"><h4>Dunaway<span>Engineering · medium leaning heavy</span></h4>
+        <p>Built its own pipeline: manifest of 200+ regulatory sources → Power Automate ingestion → SharePoint → Azure AI Search → citation-accuracy layer; citation accuracy started around 70%. <span class="see">See case library</span></p></div>
+      <div class="case"><h4>City of Montréal<span>Website agent, 40,000+ pages</span></h4>
+        <p>After launch, used Copilot Agent Kit conversation KPIs to filter low-satisfaction conversations, checked each for missing content or misrouted topics, and <strong>fed fixes back into site content and agent design</strong>.</p></div>
+      <div class="case"><h4>Microsoft agent tiers</h4>
+        <p>Retrieval agents (anyone can build) / knowledge + action agents (with connectors) / workflow automation agents; enterprise agents go through the same reviews and lifecycle as regular apps.</p></div>
+      <div class="take"><div class="label">What it means for us</div>Bimbo and Dunaway are the two ends of medium tier: <strong>knowledge already maintained</strong> → connect SharePoint, short timeline; <strong>knowledge scattered</strong> → build a pipeline, noticeably longer and pricier (our judgment). The first question in the tier decision tree: "is anyone maintaining this knowledge today?" Bimbo's 50–60% is a reminder that a working agent isn't a used agent — medium-tier delivery must carry M2 activities. Low-score conversation review goes into the owner's monthly duties.</div>
+    </div>
+  </details>
+</article>
+
+<!-- M6 -->
+<article class="module" id="m6">
+  <div class="mhead"><span class="big">M6</span><h2>ROI Measurement &amp; Review</h2><div class="status"><span class="pill warn">Lacks baseline discipline</span></div></div>
+  <div class="flowline"><span><b>In</b>Baseline + usage data</span><span><b>Out</b>Value report, next-round backlog</span></div>
+
+  <div class="block prose"><div class="label">How · baseline → measure → review</div>
+    <ul class="clean">
+      <li><strong>Capture the baseline before any work starts.</strong> This is the make-or-break point; a baseline reconstructed afterwards relies on memory, and neither we nor the client can trust it</li>
+      <li>Three metric layers: <strong>adoption</strong> (active, frequency, retention) → <strong>behavior</strong> (which scenarios, which apps) → <strong>outcomes</strong> (time per task, cycle time, rework rate, satisfaction)</li>
+      <li>Measurement window: reference KPMG's 28 days</li>
+      <li>Time × labor cost = capacity value, <strong>clearly labeled "capacity created", not cash savings</strong></li>
+      <li>Hold the review with the client: what worked, what didn't, why, what's next</li>
+    </ul></div>
+
+  <div class="block"><div class="label">Assets to build</div>
+    <ul class="assets">
+      <li class="key"><b>Baseline capture form</b> — filled in for every scenario before work starts; no form, no start</li>
+      <li><b>Metric definitions</b> — what counts as active, what counts as a successful use</li>
+      <li><b>Value report template</b> — three layers + estimate labeling + next-round recommendations</li>
+      <li class="key"><b>ROI calculator</b> — frequency, headcount, before/after time, cost rate in; capacity value out, <strong>with disclaimer language added automatically</strong> so nobody overstates verbally</li>
+    </ul></div>
+
+  <div class="block people"><div class="label">People</div><p>Someone who can do data analysis; someone who can present numbers honestly to client executives — including numbers that don't look good.</p></div>
+
+  <div class="block"><div class="label">Traps</div>
+    <ul class="traps">
+      <li><span class="bad-t">No baseline</span><span class="fix">The whole module is void</span></li>
+      <li><span class="bad-t">Reporting only usage</span><span class="fix">Self-deception</span></li>
+      <li><span class="bad-t">Presenting estimates as fact</span><span class="fix">There won't be a next round</span></li>
+      <li><span class="bad-t">Not reporting failed scenarios</span><span class="fix">Loses credibility. <strong>Failure analysis is the best renewal argument</strong></span></li>
+    </ul></div>
+
+  <details class="peers" open>
+    <summary>How others do it <span class="count">4 UK departments + 2</span></summary>
+    <div class="peers-body">
+      <p style="padding-top:14px;border-top:1px solid var(--line)">Same product, same period, four UK government departments each evaluated it — <strong>the more rigorous the method, the smaller the number</strong>:</p>
+      <div class="table-wrap"><table class="tabnum">
+        <thead><tr><th>Who</th><th>Scale</th><th>Method</th><th>Conclusion (as stated)</th></tr></thead>
+        <tbody>
+          <tr><td>GDS · Government Digital Service</td><td>20,000 people, 12 depts, 3 months</td><td><strong>Self-reported</strong> surveys + usage data, <strong>no control group</strong></td><td>26 min/day saved; project delivery 35+, tax roles 11; 82% don't want to go back</td></tr>
+          <tr><td>HMRC · Revenue &amp; Customs</td><td>3,000 random + 500 volunteer</td><td>Randomized cohort; self-reports <strong>discounted ~20%</strong></td><td>~60 min/week (2–3% of the week); ~£50m/year "capacity" projected at 50,000 licenses</td></tr>
+          <tr><td>DWP · Work &amp; Pensions</td><td>3,549 people</td><td><strong>1,716 users vs 2,535 non-users</strong> + 19 interviews</td><td>19 min/day; information search most (26), meeting transcription least (9)</td></tr>
+          <tr><td>DBT · Business &amp; Trade</td><td>1,000 licenses</td><td>Control group + <strong>observed task timing</strong> + diaries + interviews</td><td>72% satisfied; <strong>no robust evidence time savings became productivity</strong></td></tr>
+        </tbody>
+      </table></div>
+      <p class="note">After the GDS trial, 9 of 12 departments renewed and seats grew to 31,000 — imperfect numbers didn't stop renewal.</p>
+      <div class="case"><h4>Microsoft sales-team retrospective</h4>
+        <p>Pair measurement with listening: usage data says <em>whether</em> it's used; surveys and in-the-moment feedback say <em>where</em> people are stuck.</p></div>
+      <div class="case"><h4>Accenture</h4>
+        <p>Beyond usage, asked "would you deeply miss it?" (84% yes) to measure entrenchment. <span class="see">See case library</span></p></div>
+      <div class="take"><div class="label">What it means for us</div>26 minutes → 19 minutes → no robust evidence: the strongest table for explaining why the baseline comes first and why our numbers are more conservative than vendor material — put it on the methodology page of the value report. Three practices to borrow:
+        <ol><li><strong>HMRC's discount on self-reports</strong> → default discount factor in the ROI calculator</li><li><strong>HMRC's "capacity" wording</strong> → consistent with "capacity created, not cash savings"</li><li><strong>DWP's users vs non-users</strong> → unlicensed staff in the same department are a ready-made comparison group</li></ol>
+        DBT shows that reporting satisfaction alone is self-deception.</div>
+    </div>
+  </details>
+</article>
+
+<!-- M7 -->
+<article class="module" id="m7">
+  <div class="mhead"><span class="big">M7</span><h2>Governance &amp; Risk</h2><div class="status"><span class="pill warn">Assessment: after one practice run</span><span class="pill bad">Remediation: skills gap</span></div></div>
+  <div class="flowline"><span><b>In</b>Current data and permissions</span><span><b>Out</b>Governance pack, control rules</span><span><b>When</b>Up front for regulated clients; before M5 for everyone else</span></div>
+
+  <div class="block prose"><div class="label">How</div>
+    <ul class="clean">
+      <li><strong>Oversharing assessment</strong> — the most common failure point: Copilot respects permissions, but surfaces content people "technically had access to but long forgot"</li>
+      <li>Data classification and sensitivity labels</li>
+      <li>Human review rules: which outputs need a person, what must never go out as-is</li>
+      <li>Acceptable use policy: what's allowed, what isn't</li>
+      <li>Operational ownership: who approves new scenarios, maintains templates, monitors value, reclaims licenses</li>
+    </ul></div>
+
+  <div class="block"><div class="label">Assets to build</div>
+    <ul class="assets">
+      <li><b>Oversharing assessment checklist</b></li>
+      <li><b>Governance recommendation pack template</b> — licensing policy, access reviews, data protection, champion duties, feedback and escalation processes, measurement cadence</li>
+      <li><b>Human review rules template</b> (tiered by risk level)</li>
+    </ul></div>
+
+  <div class="block people alert"><div class="label">People</div><p><strong>Our clearest capability gap.</strong> Needs Purview / Defender / information protection skills. The assessment can follow Microsoft's blueprint after an internal practice run; label taxonomy, DLP and permission remediation need a hire or a partner — <strong>don't force it</strong>.</p></div>
+
+  <div class="block"><div class="label">Traps</div>
+    <ul class="traps">
+      <li><span class="bad-t">Treating it as a wrap-up step</span><span class="fix">Regulated clients stall at the last mile. Loyens &amp; Loeff is the counterexample: governance first, 1,600 people in two months</span></li>
+      <li><span class="bad-t">Producing a document only</span><span class="fix">Governance must land as concrete rules and named people</span></li>
+    </ul></div>
+
+  <details class="peers" open>
+    <summary>How others do it <span class="count">5 comparisons</span></summary>
+    <div class="peers-body">
+      <div class="case"><h4>Gartner survey<span>June 2024, 132 IT leaders</span></h4>
+        <p><strong>40%</strong> delayed rollout 3+ months over oversharing concerns; <strong>57%</strong> limited rollout to "low-risk or trusted" users; only 6% had finished pilots and planned large-scale deployment.</p></div>
+      <div class="case"><h4>Microsoft oversharing blueprint<span>Official, public</span></h4>
+        <p>Export the <strong>top 100 most-visited sites</strong>, run SharePoint Advanced Management permission reports + Purview DSPM for AI assessment; enable Restricted SharePoint Search on selected sites, disable "Everyone except external users" tenant-wide; turn on Purview Audit, Communication Compliance and DLP simulation. These capabilities are <strong>included in the Copilot license</strong>.</p></div>
+      <div class="case"><h4>Microsoft internal governance</h4>
+        <p>Four label tiers, max 5 parent + 5 sub-labels; new sites <strong>default to private, no guests</strong>, files inherit container labels; owners <strong>re-attest every 6 months</strong> or the container is deleted (recoverable); scans for "Highly Confidential" shared with 5,000+ people. Lesson: <strong>build governance into defaults, don't rely on training</strong>.</p></div>
+      <div class="case"><h4>Governance as adoption barrier<span>HMRC · Australia</span></h4>
+        <p>HMRC: <strong>46% of non-users</strong> cited security and privacy concerns as the main reason. Australia's trial and Treasury: unclear data security, information management and legal rules directly limited usage scope and output quality.</p></div>
+      <div class="case"><h4>Loyens &amp; Loeff / KOHLER</h4>
+        <p>One put governance first and rolled out 1,600 people in two months; the other moved from "security first" to "lead with yes", with governance as a quiet enabler. <span class="see">See case library</span></p></div>
+      <div class="take"><div class="label">What it means for us</div>
+        <ol><li><strong>Assess ourselves, partner for remediation.</strong> "Top-100 site permission report + DSPM assessment + risk list" is deliverable after one practice run; the real gap is label taxonomy, DLP and remediation.</li><li>Gartner's 40% / 57% are ready-made numbers for "why M7 runs before M5".</li><li>HMRC's 46%: without clear rules on what data can go into Copilot, the front line won't use it. Write the acceptable use policy on one page and put it into M2 training.</li></ol></div>
+    </div>
+  </details>
+</article>
+
+    </div>
+  </div>
+</section>
+
+<section class="section" aria-labelledby="key-h">
+  <h2 id="key-h">The four assets to build first</h2>
+  <p class="sub">Reused across clients, stronger with every use. Every other asset is a single-client template whose value ends with the project.</p>
+  <ul class="keyassets">
+    <li><span class="code">M2</span><b>Role scenario cards</b><p>Daily repeated work, prompts and before/after for each role</p></li>
+    <li><span class="code">M3</span><b>Cross-client scenario library</b><p>By client 5, discovery drops from days to hours</p></li>
+    <li><span class="code">M4</span><b>Scoring sheet &amp; definitions</b><p>Different consultants, same score</p></li>
+    <li><span class="code">M6</span><b>Baseline form &amp; ROI calculator</b><p>Filled before work starts; disclaimers built in</p></li>
+  </ul>
+  <p class="closing">These four are what accumulates on the balance sheet.</p>
+</section>
+
+<section class="section" aria-labelledby="src-h">
+  <h2 id="src-h">Comparison sources</h2>
+  <div class="sources">
+    <h3>Microsoft's own practice</h3>
+    <ul>
+      <li><a href="https://www.microsoft.com/insidetrack/blog/deploying-microsoft-365-copilot-in-five-chapters/">Deploying Copilot in five chapters</a> <span>M1 M3 M5</span></li>
+      <li><a href="https://www.microsoft.com/insidetrack/blog/making-ai-stick-for-sellers-five-adoption-lessons-from-our-copilot-rollout/">Five adoption lessons for sellers</a> <span>M1 M2 M6</span></li>
+      <li><a href="https://www.microsoft.com/insidetrack/blog/driving-copilot-for-microsoft-365-adoption-with-our-copilot-champs-community/">Copilot Champs Community</a> <span>M2</span></li>
+      <li><a href="https://techcommunity.microsoft.com/blog/viva_engage_blog/scaling-copilot-adoption-with-the-copilot-adoption-community-in-viva-engage/4499995">Copilot Adoption Community in Viva Engage</a> <span>M2</span></li>
+      <li><a href="https://www.microsoft.com/insidetrack/blog/how-were-tackling-microsoft-365-copilot-governance-internally-at-microsoft/">Copilot governance internally</a> <span>M7</span></li>
+      <li><a href="https://techcommunity.microsoft.com/blog/healthcareandlifesciencesblog/microsoft-deployment-blueprint---address-oversharing-concerns-for-your-m365-copi/4434598">Oversharing deployment blueprint</a> <span>M7</span></li>
+      <li><a href="https://adoption.microsoft.com/en-us/copilot-scenario-library/">Copilot Scenario Library</a> <span>M3</span></li>
+      <li><a href="https://learn.microsoft.com/en-us/microsoft-cloud/dev/copilot/isv/business-envisioning">BXT framework</a> <span>M4</span></li>
+      <li><a href="https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ai/plan">Cloud Adoption Framework · Plan</a> <span>M4</span></li>
+    </ul>
+    <h3>Customer cases</h3>
+    <ul>
+      <li><a href="https://learn.microsoft.com/en-us/power-platform/guidance/case-studies/grupo-bimbo-global-audit">Grupo Bimbo global audit</a> <span>M3 M5</span></li>
+      <li><a href="https://learn.microsoft.com/en-us/power-platform/guidance/case-studies/copilot-agent-kit-examples">Copilot Agent Kit examples (City of Montréal)</a> <span>M5</span></li>
+      <li><a href="copilot-consulting-case-library.md">Case library: KOHLER, Accenture, KPMG, Dunaway, Loyens &amp; Loeff</a></li>
+    </ul>
+    <h3>Public government evaluations</h3>
+    <ul>
+      <li><a href="https://assets.publishing.service.gov.uk/media/683db42bd23a62e5d32680d0/M365_Copilot_Experiment_Findings_Report.pdf">UK GDS Findings Report</a> <span>M6</span></li>
+      <li><a href="https://www.gov.uk/government/publications/evaluation-report-phase-3-trial-of-microsoft-copilot/evaluating-the-impact-of-microsoft-copilot-in-hmrc">HMRC evaluation</a> <span>M6 M7</span></li>
+      <li><a href="https://www.theregister.com/2026/02/04/dwp_finds_copilot_saves_civil/">DWP evaluation (The Register)</a> <span>M6</span></li>
+      <li><a href="https://assets.publishing.service.gov.uk/media/68adbe409e1cebdd2c96a19d/dbt-microsoft-365-copilot-evaluation.pdf">DBT evaluation</a> <span>M1 M4 M6</span></li>
+      <li><a href="https://www.digital.gov.au/initiatives/copilot-trial">Australian Government Copilot trial</a> <span>M2 M4 M7</span></li>
+      <li><a href="https://evaluation.treasury.gov.au/publications/evaluation-generative-artificial-intelligence">Australian Treasury evaluation</a> <span>M4 M7</span></li>
+    </ul>
+    <h3>Third parties</h3>
+    <ul>
+      <li><a href="https://www.computerworld.com/article/3542000/microsoft-365-copilot-rollouts-slowed-by-data-security-roi-concerns.html">Gartner survey (Computerworld)</a> <span>M7</span></li>
+      <li><a href="https://practical365.com/inactive-copilot-users/">Practical365 inactive users</a> <span>M1</span></li>
+    </ul>
+  </div>
+  <p class="note" style="margin-top:8px">Verification note: some DWP and DBT figures come from media coverage, and the Gartner figures from Computerworld. Check them against the originals before using them in any client deliverable.</p>
+</section>
+</div>
+
+<script>
+(function(){
+  var btn = document.getElementById('toggle-peers');
+  var peers = Array.prototype.slice.call(document.querySelectorAll('details.peers'));
+  function sync(){
+    var anyOpen = peers.some(function(d){return d.open;});
+    btn.textContent = anyOpen ? 'Collapse all comparisons' : 'Expand all comparisons';
+  }
+  btn.addEventListener('click', function(){
+    var anyOpen = peers.some(function(d){return d.open;});
+    peers.forEach(function(d){d.open = !anyOpen;});
+    sync();
+  });
+  peers.forEach(function(d){d.addEventListener('toggle', sync);});
+
+  var links = {};
+  document.querySelectorAll('.nav a').forEach(function(a){links[a.getAttribute('href').slice(1)] = a;});
+  if ('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting){
+          Object.keys(links).forEach(function(k){links[k].classList.toggle('on', k === e.target.id);});
+          var a = links[e.target.id];
+          if (a && window.matchMedia('(max-width:980px)').matches){
+            a.parentNode.parentNode.scrollLeft = a.offsetLeft - 20;
+          }
+        }
+      });
+    }, {rootMargin:'-30% 0px -60% 0px'});
+    document.querySelectorAll('.module').forEach(function(m){io.observe(m);});
+  }
+})();
+</script>
